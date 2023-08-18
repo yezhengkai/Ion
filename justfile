@@ -1,6 +1,7 @@
 build target="aarch64-apple-darwin":
     cargo build --bin ion --release -F bin --target {{target}}
 
+[linux, macos]
 tarball target="aarch64-apple-darwin":
     #!/usr/bin/env bash
     DIST="target/{{target}}/dist"
@@ -12,6 +13,19 @@ tarball target="aarch64-apple-darwin":
     cd target/{{target}} && tar -czf ${NAME}.tar.gz dist
     ARCHIVE="target/{{target}}/${NAME}.tar.gz"
     echo "::set-output name=archive::$ARCHIVE"
+
+[windows]
+tarball target="x86_64-pc-windows-msvc":
+    #!powershell.exe
+    $DIST = "target/{{target}}/dist"
+    $VERSION = "$(cargo xtask version)"
+    $NAME = "ion-v${VERSION}-{{target}}"
+    mkdir -p $DIST
+    mkdir -p $DIST/bin
+    cp target/{{target}}/release/ion.exe $DIST/bin/ion.exe
+    (cd target/{{target}}) -and (Compress-Archive -Path dist -DestinationPath ${NAME}.zip)
+    $ARCHIVE = "target/{{target}}/${NAME}.zip"
+    Write-Host "::set-output name=archive::$ARCHIVE"
 
 delete-release tag:
     gh release delete v{{tag}} -y
