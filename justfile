@@ -23,7 +23,7 @@ tarball target="x86_64-pc-windows-msvc":
     mkdir -p $DIST
     mkdir -p $DIST/bin
     cp target/{{target}}/release/ion.exe $DIST/bin/ion.exe
-    (cd target/{{target}}) -and (Compress-Archive -Path dist -DestinationPath ${NAME}.zip)
+    Compress-Archive -Path target/{{target}}/dist -DestinationPath target/{{target}}/${NAME}.zip
     $ARCHIVE = "target/{{target}}/${NAME}.zip"
     Write-Host "::set-output name=archive::$ARCHIVE"
 
