@@ -8,6 +8,10 @@ on:
   push:
     tags:
     - '*'
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        required: true
 
 defaults:
   run:
