@@ -25,6 +25,7 @@ jobs:
         - aarch64-apple-darwin
         - x86_64-apple-darwin
         - x86_64-unknown-linux-musl
+        - aarch64-unknown-linux-musl
         - x86_64-pc-windows-gnu
         - x86_64-pc-windows-msvc
         include:
@@ -35,6 +36,9 @@ jobs:
           os: macos-latest
           target_rustflags: ''
         - target: x86_64-unknown-linux-musl
+          os: ubuntu-latest
+          target_rustflags: ''
+        - target: aarch64-unknown-linux-musl
           os: ubuntu-latest
           target_rustflags: ''
         - target: x86_64-pc-windows-gnu
@@ -62,7 +66,7 @@ jobs:
       if: ${{ matrix.target == 'aarch64-unknown-linux-musl' }}
       run: |
         sudo apt-get update
-        sudo apt-get install gcc-aarch64-linux-gnu
+        sudo apt-get install gcc-aarch64-linux-gnu pkg-config libssl-dev
 
     - name: Install ARM7 Toolchain
       if: ${{ matrix.target == 'armv7-unknown-linux-musleabihf' }}
