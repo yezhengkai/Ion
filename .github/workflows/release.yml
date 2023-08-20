@@ -67,7 +67,7 @@ jobs:
       uses: ryankurte/action-apt@v0.3.0
       with:
         arch: aarch64
-        packages: "gcc-aarch64-linux-gnu libssl-dev:arm64"
+        packages: "gcc-aarch64-linux-gnu libssl-dev:aarch64"
 
       # run: |
       #   sudo dpkg --add-architecture arm64
