@@ -7,7 +7,7 @@ use tar::Archive;
 
 pub struct RemoteTemplate<'a> {
     config: &'a Config,
-    url: url::Url,
+    url: Vec<url::Url>,
 }
 
 impl<'a> RemoteTemplate<'a> {
@@ -19,13 +19,19 @@ impl<'a> RemoteTemplate<'a> {
     }
 
     pub fn download(&self) -> Result<()> {
-        let tmp_dir = tempfile::Builder::new().prefix("ion-templates").tempdir()?;
-        let fname = tmp_dir.path().join("ion-templates.tar.gz");
-        let dest = File::create(&fname)?;
-        Download::from_url(self.url.as_str())
-            .show_progress(true)
-            .download_to(dest)?;
-
+        // let tmp_dir = tempfile::Builder::new().prefix("ion-templates").tempdir()?;
+        // let fname = tmp_dir.path().join("ion-templates.tar.gz");
+        // let dest = File::create(&fname)?;
+        // Download::from_url(self.url.as_str())
+        //     .show_progress(true)
+        //     .download_to(dest)?;
+        for url in self.url.iter() {
+            let tmp_dir = tempfile::Builder::new().prefix("ion-templates").tempdir()?;
+            let fname = tmp_dir.path().join("ion-templates.tar.gz");
+            let dest = File::create(&fname)?;
+            Download::from_url(url.as_str())
+                .show_progress(true)
+                .download_to(dest)?;
         log::debug!("downloaded to: '{:?}'", fname.display());
         let tar_gz = File::open(&fname)?;
         let tar = GzDecoder::new(tar_gz);
@@ -41,6 +47,7 @@ impl<'a> RemoteTemplate<'a> {
             log::debug!("unpacking: '{:?}'", path);
             e.unpack(&path).unwrap();
         });
+    }
         Ok(())
     }
 }
