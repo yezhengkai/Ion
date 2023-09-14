@@ -1,5 +1,5 @@
 use clap::parser::ArgMatches;
-use clap::{arg, Command};
+use clap::{arg, Command, ValueHint};
 use ion::blueprints::{
     ask_inspect_template, inspect_all_templates, inspect_template, list_templates,
 };
@@ -12,6 +12,17 @@ pub fn cli() -> Command {
         .about("template management")
         .subcommand(Command::new("list").about("list all available templates"))
         .subcommand(Command::new("update").about("update the templates from registry"))
+        .subcommand(
+            Command::new("registry")
+                .about("manage template registry")
+                .subcommand(Command::new("add").about("add template registry").arg(
+                    arg!(registry: <REGISTRY> "The registry to add").value_hint(ValueHint::Url),
+                ))
+                .subcommand(Command::new("remove").about("remove template registry"))
+                .subcommand(Command::new("status").about("information about installed registries"))
+                .subcommand(Command::new("update").about("update template registry"))
+                .arg_required_else_help(true),
+        )
         .subcommand(
             Command::new("inspect")
                 .about("inspect the contents of a template")
@@ -42,6 +53,24 @@ pub fn exec(config: &mut Config, matches: &ArgMatches) -> CliResult {
         }
         Some(("update", _)) => {
             RemoteTemplate::new(config).download()?;
+        }
+        Some(("registry", matches)) => {
+            match matches.subcommand() {
+                Some(("add", args)) => {
+                    config.add_registry(args.get_one::<String>("registry").unwrap())?;
+                    println!("add function")
+                }
+                Some(("remove", _)) => {
+                    println!("rm function")
+                }
+                Some(("status", _)) => {
+                    println!("status function")
+                }
+                Some(("update", _)) => {
+                    println!("update function")
+                }
+                _ => unreachable!(),
+            }
         }
         Some(("inspect", matches)) => {
             let all_flag = matches.get_flag("all");
