@@ -18,7 +18,7 @@ pub struct GitHub {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Template {
     pub default: String,
-    pub registry: url::Url,
+    pub registry: Vec<url::Url>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -92,6 +92,12 @@ impl Config {
 
     pub fn template(&self) -> Template {
         self.template.clone()
+    }
+
+    pub fn add_registry(&mut self, registry: &str) -> Result<()> {
+        self.template.registry.push(url::Url::parse(registry).unwrap());
+        self.write()?;
+        Ok(())
     }
 
     pub fn login(&mut self) -> Result<()> {
@@ -170,7 +176,7 @@ impl Default for Template {
         /releases/latest/download/ion-templates.tar.gz";
         Self {
             default: "project".into(),
-            registry: url::Url::parse(registry).unwrap(),
+            registry: vec![url::Url::parse(registry).unwrap()],
         }
     }
 }
